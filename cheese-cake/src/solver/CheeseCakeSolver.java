@@ -1,65 +1,7 @@
 package solver;
-import java.util.Random;
 
 
-public class CheeseCake {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		int dimX = 10;
-		int dimY = 6;
-		boolean onlyClosest = false;
-
-		Cell[][] grid = createGrid(dimX, dimY);
-
-		for (int i = 0; i < dimX; i++) {
-
-			for (int j = 0; j < dimY; j++) {
-
-				System.out.printf("%b ", grid[i][j].isCrossable());
-
-			}
-
-			System.out.println();
-
-		}
-
-		boolean isTrav = false;
-
-		for (int j = 0; j < dimY; j++) {
-			isTrav = isTrav || isTraversable(grid, 0, j, onlyClosest);
-		}
-
-		System.out.println("is crossable: " + isTrav);
-
-	}
-
-	public static Cell[][] createGrid(int dimX, int dimY) {
-
-		Cell[][] grid = new Cell[dimX][dimY];
-
-		Random randomGenerator = new Random();
-
-		for (int i = 0; i < dimX; i++) {
-
-			for (int j = 0; j < dimY; j++) {
-
-				if (randomGenerator.nextDouble() > 0.5) {
-					grid[i][j] = new Cell(true);
-				} else {
-					grid[i][j] = new Cell(false);
-				}
-
-			}
-
-		}
-
-		return grid;
-
-	}
+public class CheeseCakeSolver {
 
 	public static boolean isTraversable(Cell[][] grid, boolean onlyClosest) {
 
@@ -70,7 +12,7 @@ public class CheeseCake {
 		}
 
 		return isTrav;
-		
+
 	}
 
 	private static boolean isTraversable(Cell[][] grid, int x, int y,
@@ -110,7 +52,19 @@ public class CheeseCake {
 
 	}
 
-	public static boolean isTraversable(Cell[][][] grid, int x, int y, int z,
+	public static boolean isTraversable(Cell[][][] grid, boolean onlyClosest) {
+		boolean isTrav = false;
+
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[0].length; j++) {
+				isTrav = isTrav || isTraversable(grid, 0, j, i, onlyClosest);
+			}
+		}
+
+		return isTrav;
+	}
+
+	private static boolean isTraversable(Cell[][][] grid, int x, int y, int z,
 			boolean onlyClosest) {
 
 		if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || z < 0
@@ -123,7 +77,7 @@ public class CheeseCake {
 			return false;
 		}
 
-		if (x == grid.length - 1) {
+		if (z == grid[0][0].length - 1) {
 			return true;
 		}
 
@@ -176,13 +130,13 @@ public class CheeseCake {
 					|| isTraversable(grid, x, y - 1, z - 1, onlyClosest);
 
 			isTrav = isTrav
-					|| isTraversable(grid, x + 1, y - 1, z, onlyClosest);
+					|| isTraversable(grid, x + 1, y, z + 1, onlyClosest);
 			isTrav = isTrav
-					|| isTraversable(grid, x - 1, y - 1, z, onlyClosest);
+					|| isTraversable(grid, x - 1, y, z + 1, onlyClosest);
 			isTrav = isTrav
-					|| isTraversable(grid, x + 1, y + 1, z, onlyClosest);
+					|| isTraversable(grid, x + 1, y, z - 1, onlyClosest);
 			isTrav = isTrav
-					|| isTraversable(grid, x - 1, y + 1, z, onlyClosest);
+					|| isTraversable(grid, x - 1, y, z - 1, onlyClosest);
 		}
 
 		grid[x][y][z].setStatus(Cell.BLACK);
