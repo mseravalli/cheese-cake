@@ -1,4 +1,4 @@
-import java.util.Random;
+import gui.MainWindow;
 
 import solver.Cell;
 import solver.CheeseCakeSolver;
@@ -9,9 +9,22 @@ public class CheeseCake {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	
+            	Cell[][] grid = CheeseCakeSolver.createGrid(0.6, 14, 12);
+            	
+            	CheeseCakeSolver.isTraversable(grid, false);
+            	
+                MainWindow.runMainWindow(grid);
+            }
+        });
+	}
+	
 
-		int dimX = 4;
-		int dimY = 4;
+	public static void runSimulation() {
+		int dimX = 10;
+		int dimY = 10;
 		boolean onlyClosest = true;
 
 		double nOfSim = 10000;
@@ -20,6 +33,8 @@ public class CheeseCake {
 
 		double sum = 0.0;
 		double average = 0.0;
+
+		System.out.printf("Dimension of the matix: %d x %d \n", dimX, dimY);
 
 		for (int i = 1; i <= numOfSteps; i++) {
 
@@ -33,7 +48,7 @@ public class CheeseCake {
 			for (int j = 0; j < nOfSim; j++) {
 
 				if (CheeseCakeSolver.isTraversable(
-						createGrid(percentageFilled, dimX, dimY), onlyClosest)) {
+						CheeseCakeSolver.createGrid(percentageFilled, dimX, dimY), onlyClosest)) {
 					sum++;
 				}
 
@@ -46,61 +61,6 @@ public class CheeseCake {
 					average);
 
 		}
-
-	}
-
-	public static Cell[][] createGrid(double percentageFilled, int dimX,
-			int dimY) {
-
-		Cell[][] grid = new Cell[dimX][dimY];
-
-		Random randomGenerator = new Random();
-
-		for (int i = 0; i < dimX; i++) {
-
-			for (int j = 0; j < dimY; j++) {
-
-				if (randomGenerator.nextDouble() < percentageFilled) {
-					grid[i][j] = new Cell(true);
-				} else {
-					grid[i][j] = new Cell(false);
-				}
-
-			}
-
-		}
-
-		return grid;
-
-	}
-
-	public static Cell[][][] createGrid(double percentageFilled, int dimX,
-			int dimY, int dimZ) {
-
-		Cell[][][] grid = new Cell[dimX][dimY][dimZ];
-
-		Random randomGenerator = new Random();
-
-		for (int i = 0; i < dimX; i++) {
-
-			for (int j = 0; j < dimY; j++) {
-
-				for (int k = 0; k < dimZ; k++) {
-
-					if (randomGenerator.nextDouble() < percentageFilled) {
-						grid[i][j][k] = new Cell(true);
-					} else {
-						grid[i][j][k] = new Cell(false);
-					}
-
-				}
-
-			}
-
-		}
-
-		return grid;
-
 	}
 
 }

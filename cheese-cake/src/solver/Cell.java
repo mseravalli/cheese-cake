@@ -13,11 +13,14 @@ public class Cell {
 	private byte status;
 
 	private boolean isCrossable;
+	
+	private boolean isSolution;
 
 	public Cell(boolean isCrossable) {
 		super();
 		this.isCrossable = isCrossable;
 		this.status = WHITE;
+		this.isSolution = false;
 	}
 
 	public byte getStatus() {
@@ -30,6 +33,14 @@ public class Cell {
 
 	public boolean isCrossable() {
 		return isCrossable;
+	}
+	
+	public boolean isSolution() {
+		return isSolution;
+	}
+
+	public void setSolution(boolean isSolution) {
+		this.isSolution = isSolution;
 	}
 
 }
