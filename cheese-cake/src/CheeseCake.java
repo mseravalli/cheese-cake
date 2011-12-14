@@ -12,9 +12,9 @@ public class CheeseCake {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	
-            	Cell[][] grid = CheeseCakeSolver.createGrid(0.6, 14, 12);
+            	Cell[][] grid = CheeseCakeSolver.createGrid(0.6, 5, 10);
             	
-            	CheeseCakeSolver.isTraversable(grid, false);
+            	CheeseCakeSolver.isTraversable(grid, true);
             	
                 MainWindow.runMainWindow(grid);
             }

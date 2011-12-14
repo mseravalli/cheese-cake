@@ -13,35 +13,38 @@ public class XGrid extends JComponent {
 
 	private Cell[][] grid = null;
 
-	private final int HEIGHT = 20;
-	private final int WIDTH = 20;
+	private int height = 20;
+	private int width = 20;
 
 	public XGrid(Cell[][] grid) {
 
 		this.grid = grid;
-		
+
 	}
 
 	public void paint(Graphics g) {
-		
+
+		width = this.getSize().width / (grid[0].length);
+		height = this.getSize().height / (grid.length);
+
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
 
 				if (this.grid[i][j].isSolution()) {
 					g.setColor(Color.blue);
-				} else if (this.grid[i][j].isCrossable())  {
+				} else if (this.grid[i][j].isCrossable()) {
 					g.setColor(Color.yellow);
 				} else {
 					g.setColor(Color.gray);
 				}
 
-				g.fillRect((HEIGHT + 1) * i, (WIDTH + 1) * j, HEIGHT, WIDTH);
+				g.fillRect((width) * j, (height) * i, width - 1, height - 1);
 			}
 		}
 
 	}
-	
-	public void setGrid(Cell[][] grid){
+
+	public void setGrid(Cell[][] grid) {
 		this.grid = grid;
 	}
 
