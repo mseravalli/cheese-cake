@@ -28,6 +28,9 @@ public class XGrid extends JComponent {
 
 		width = this.getSize().width / (grid.getRows());
 		height = this.getSize().height / (grid.getCols());
+		
+//		width = this.getSize().width / (grid.getCols());
+//		height = this.getSize().height / (grid.getRows());
 
 		for (int i = 0; i < grid.getRows(); i++) {
 			for (int j = 0; j < grid.getCols(); j++) {
@@ -40,7 +43,7 @@ public class XGrid extends JComponent {
 					g.setColor(Color.gray);
 				}
 
-				g.fillRect((width) * j, (height) * i, width - 1, height - 1);
+				g.fillRect((width) * i, (height) * j, width - 1, height - 1);
 			}
 		}
 

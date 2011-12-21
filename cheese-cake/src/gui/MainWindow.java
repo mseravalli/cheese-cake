@@ -1,7 +1,5 @@
 package gui;
 
-import grid.Cell;
-import grid.CheeseCakeSolver;
 import grid.Grid2D;
 
 import java.awt.BorderLayout;
@@ -99,9 +97,9 @@ public class MainWindow extends JFrame implements ActionListener {
 		settingsPane.setLayout(new GridLayout(0, 2));
 
 		settingsPane.add(new JLabel("number of rows"));
-		settingsPane.add(nOfRows);
-		settingsPane.add(new JLabel("number of cols"));
 		settingsPane.add(nOfCols);
+		settingsPane.add(new JLabel("number of cols"));
+		settingsPane.add(nOfRows);
 		settingsPane.add(new JLabel("percentage filled"));
 		settingsPane.add(percFilled);
 		settingsPane.add(new JLabel("only closest"));
