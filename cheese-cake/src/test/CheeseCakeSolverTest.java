@@ -17,35 +17,30 @@ public class CheeseCakeSolverTest {
 		
 		boolean onlyClosest;
 
-		Cell[][] grid1 = {{new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-						  {new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-						  {new Cell(X), new Cell(O), new Cell(X), new Cell(X), new Cell(X) },
-						  {new Cell(X), new Cell(X), new Cell(X), new Cell(O), new Cell(X) },
-						  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) },
-						  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) }};		
+		Cell[][] grid1 = {{new Cell(X), new Cell(X), new Cell(X), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(O), new Cell(O), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(X), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(O), new Cell(O), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(X), new Cell(X), new Cell(X) },
+						  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(O) }};		
 		
 		onlyClosest = true;
 		assertEquals(true, CheeseCakeSolver.isTraversable(grid1, onlyClosest));
 		
-		Cell[][] grid2 = {{new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-				  		  {new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-				  		  {new Cell(X), new Cell(O), new Cell(X), new Cell(X), new Cell(X) },
-				  		  {new Cell(X), new Cell(X), new Cell(O), new Cell(O), new Cell(X) },
-				  		  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) },
-				  		  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) }};		
+		Cell[][] grid2 = {{new Cell(X), new Cell(X), new Cell(X), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(O), new Cell(O), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(X), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(O), new Cell(O), new Cell(O) },
+						  {new Cell(O), new Cell(X), new Cell(X), new Cell(X), new Cell(O) },
+						  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) }};		
 
 		onlyClosest = true;
 		assertEquals(false, CheeseCakeSolver.isTraversable(grid2, onlyClosest));
 		
-		Cell[][] grid3 = {{new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-		  		  		  {new Cell(X), new Cell(O), new Cell(O), new Cell(O), new Cell(O) },
-		  		  		  {new Cell(X), new Cell(O), new Cell(X), new Cell(X), new Cell(X) },
-		  		  		  {new Cell(X), new Cell(X), new Cell(O), new Cell(O), new Cell(X) },
-		  		  		  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) },
-		  		  		  {new Cell(O), new Cell(O), new Cell(O), new Cell(O), new Cell(X) }};
+		CheeseCakeSolver.cleanGrid(grid2);
 		
 		onlyClosest = false;
-		assertEquals(true, CheeseCakeSolver.isTraversable(grid3, onlyClosest));
+		assertEquals(true, CheeseCakeSolver.isTraversable(grid2, onlyClosest));
 		
 	}
 	
