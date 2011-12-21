@@ -24,8 +24,26 @@ public class Grid2D extends Grid {
 
 	}
 	
+	//needed for testing purposes
 	public Grid2D(Cell[][] g){
 		this.g = g;
+	}
+	
+	
+	public int getRows(){
+		return g.length;
+	}
+	
+	public int getCols(){
+		return g[0].length;
+	}
+	
+	public boolean isSolution(int x, int y){
+		return g[x][y].isSolution();
+	}
+	
+	public boolean isCrossable(int x, int y){
+		return g[x][y].isCrossable();
 	}
 
 	@Override

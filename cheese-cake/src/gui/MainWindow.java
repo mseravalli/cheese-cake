@@ -2,6 +2,7 @@ package gui;
 
 import grid.Cell;
 import grid.CheeseCakeSolver;
+import grid.Grid2D;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -29,7 +30,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	private XGrid xgrid;
 
-	private Cell[][] grid;
+	private Grid2D grid;
 
 	private JTextField nOfRows;
 	private JTextField nOfCols;
@@ -71,11 +72,11 @@ public class MainWindow extends JFrame implements ActionListener {
 		double percF = 0.5;
 
 		// initialize object attributes
-		this.grid = CheeseCakeSolver.createGrid(percF, rows, cols);
+		this.grid = new Grid2D(percF, rows, cols);
 		xgrid = new XGrid(this.grid);
 
-		this.nOfRows = new JTextField(String.valueOf(grid.length));
-		this.nOfCols = new JTextField(String.valueOf(grid[0].length));
+		this.nOfRows = new JTextField(String.valueOf(rows));
+		this.nOfCols = new JTextField(String.valueOf(cols));
 		this.percFilled = new JTextField(String.valueOf(0.5));
 		this.onlyClosest = new JCheckBox();
 
@@ -122,11 +123,11 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	}
 
-	public Cell[][] getGrid() {
-		return grid;
-	}
+//	public Cell[][] getGrid() {
+//		return grid;
+//	}
 
-	public void setGrid(Cell[][] grid) {
+	public void setGrid(Grid2D grid) {
 		this.grid = grid;
 		xgrid.setGrid(this.grid);
 	}
@@ -141,16 +142,15 @@ public class MainWindow extends JFrame implements ActionListener {
 		}
 
 		if (arg0.getActionCommand().equals(ACTION_CLEAN)) {
-			CheeseCakeSolver.cleanGrid(grid);
+			grid.cleanGrid();
 			this.travResult.setText("");
 			this.repaint();
 		}
 
 		if (arg0.getActionCommand().equals(ACTION_TRAVERSAL)) {
 
-			CheeseCakeSolver.cleanGrid(grid);
-			boolean isTrav = CheeseCakeSolver.isTraversable(this.grid,
-					this.onlyClosest.isSelected());
+			grid.cleanGrid();
+			boolean isTrav = grid.isTraversable(onlyClosest.isSelected());
 			
 			if(isTrav){
 				this.travResult.setText("Traversable");
@@ -167,7 +167,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		double percentageFilled = Double.valueOf(this.percFilled.getText());
 		int dimX = Integer.valueOf(this.nOfRows.getText());
 		int dimY = Integer.valueOf(this.nOfCols.getText());
-		this.setGrid(CheeseCakeSolver.createGrid(percentageFilled, dimX, dimY));
+		this.setGrid(new Grid2D(percentageFilled, dimX, dimY));
 	}
 
 }
