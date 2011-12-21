@@ -1,11 +1,12 @@
 package gui;
 
+import grid.Cell;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-import solver.Cell;
 
 public class XGrid extends JComponent {
 

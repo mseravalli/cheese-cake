@@ -1,11 +1,11 @@
 package test;
 
 import static org.junit.Assert.*;
+import grid.Cell;
+import grid.CheeseCakeSolver;
 
 import org.junit.Test;
 
-import solver.Cell;
-import solver.CheeseCakeSolver;
 
 public class CheeseCakeSolverTest {
 

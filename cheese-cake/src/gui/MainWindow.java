@@ -1,5 +1,8 @@
 package gui;
 
+import grid.Cell;
+import grid.CheeseCakeSolver;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -13,8 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import solver.Cell;
-import solver.CheeseCakeSolver;
 
 public class MainWindow extends JFrame implements ActionListener {
 

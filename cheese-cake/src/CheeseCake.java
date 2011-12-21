@@ -1,6 +1,6 @@
+import grid.CheeseCakeSolver;
 import gui.MainWindow;
 
-import solver.CheeseCakeSolver;
 
 public class CheeseCake {
 

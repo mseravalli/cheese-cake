@@ -1,4 +1,4 @@
-package solver;
+package grid;
 
 import java.util.Random;
 
