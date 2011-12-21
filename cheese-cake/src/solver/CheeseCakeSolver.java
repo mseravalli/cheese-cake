@@ -2,7 +2,6 @@ package solver;
 
 import java.util.Random;
 
-
 public class CheeseCakeSolver {
 
 	public static boolean isTraversable(Cell[][] grid, boolean onlyClosest) {
@@ -36,33 +35,37 @@ public class CheeseCakeSolver {
 		grid[x][y].setStatus(Cell.GREY);
 
 		boolean isTrav = false;
-		
-		if(!isTrav)
+
+		if (!isTrav)
 			isTrav = isTrav || isTraversable(grid, x, y + 1, onlyClosest);
-		if(!isTrav)
+		if (!isTrav)
 			isTrav = isTrav || isTraversable(grid, x - 1, y, onlyClosest);
-		if(!isTrav)
+		if (!isTrav)
 			isTrav = isTrav || isTraversable(grid, x + 1, y, onlyClosest);
-		if(!isTrav)
+		if (!isTrav)
 			isTrav = isTrav || isTraversable(grid, x, y - 1, onlyClosest);
 
 		if (!onlyClosest) {
-			if(!isTrav)
-				isTrav = isTrav || isTraversable(grid, x - 1, y + 1, onlyClosest);
-			if(!isTrav)
-				isTrav = isTrav || isTraversable(grid, x + 1, y + 1, onlyClosest);
-			if(!isTrav)
-				isTrav = isTrav || isTraversable(grid, x + 1, y - 1, onlyClosest);
-			if(!isTrav)
-				isTrav = isTrav || isTraversable(grid, x - 1, y - 1, onlyClosest);
+			if (!isTrav)
+				isTrav = isTrav
+						|| isTraversable(grid, x - 1, y + 1, onlyClosest);
+			if (!isTrav)
+				isTrav = isTrav
+						|| isTraversable(grid, x + 1, y + 1, onlyClosest);
+			if (!isTrav)
+				isTrav = isTrav
+						|| isTraversable(grid, x + 1, y - 1, onlyClosest);
+			if (!isTrav)
+				isTrav = isTrav
+						|| isTraversable(grid, x - 1, y - 1, onlyClosest);
 		}
 
 		grid[x][y].setStatus(Cell.BLACK);
 
-		if(isTrav){
+		if (isTrav) {
 			grid[x][y].setSolution(true);
 		}
-		
+
 		return isTrav;
 
 	}
@@ -162,56 +165,64 @@ public class CheeseCakeSolver {
 
 	public static Cell[][] createGrid(double percentageFilled, int dimX,
 			int dimY) {
-	
+
 		Cell[][] grid = new Cell[dimX][dimY];
-	
+
 		Random randomGenerator = new Random();
-	
+
 		for (int i = 0; i < dimX; i++) {
-	
+
 			for (int j = 0; j < dimY; j++) {
-	
+
 				if (randomGenerator.nextDouble() < percentageFilled) {
 					grid[i][j] = new Cell(true);
 				} else {
 					grid[i][j] = new Cell(false);
 				}
-	
+
 			}
-	
+
 		}
-	
+
 		return grid;
-	
+
 	}
 
 	public static Cell[][][] createGrid(double percentageFilled, int dimX,
 			int dimY, int dimZ) {
-	
+
 		Cell[][][] grid = new Cell[dimX][dimY][dimZ];
-	
+
 		Random randomGenerator = new Random();
-	
+
 		for (int i = 0; i < dimX; i++) {
-	
+
 			for (int j = 0; j < dimY; j++) {
-	
+
 				for (int k = 0; k < dimZ; k++) {
-	
+
 					if (randomGenerator.nextDouble() < percentageFilled) {
 						grid[i][j][k] = new Cell(true);
 					} else {
 						grid[i][j][k] = new Cell(false);
 					}
-	
+
 				}
-	
+
 			}
-	
+
 		}
-	
+
 		return grid;
-	
+
 	}
 
+	public static void cleanGrid(Cell[][] grid) {
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[0].length; j++) {
+				grid[i][j].setSolution(false);
+				grid[i][j].setStatus(Cell.WHITE);
+			}
+		}
+	}
 }

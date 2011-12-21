@@ -3,82 +3,124 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import solver.Cell;
+import solver.CheeseCakeSolver;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 2740437090361841747L;
 
 	private static MainWindow mainWindow = null;
-	
+
+	private static final String ACTION_CREATE = "Create Grid";
+	private static final String ACTION_CLEAN = "Clean Grid";
+	private static final String ACTION_TRAVERSAL = "Start Traversal";
+
 	private XGrid xgrid;
-	
+
 	private Cell[][] grid;
-	
+
+	private JTextField nOfRows;
+	private JTextField nOfCols;
+	private JTextField percFilled;
+	private JCheckBox onlyClosest;
+
+	private JButton createGrid;
+	private JButton cleanGrid;
+	private JButton startTraversal;
+
+	private JLabel travResult;
+
 	/**
 	 * Singleton pattern applied
 	 */
-	public static void runMainWindow(Cell[][] grid){
-		
-		if(mainWindow == null){
-			
-			mainWindow = new MainWindow(grid);
-			
+	public static void runMainWindow() {
+
+		if (mainWindow == null) {
+
+			mainWindow = new MainWindow();
+
 		}
-		
+
 	}
-	
-	private MainWindow(Cell[][] grid){
-		
+
+	private MainWindow() {
+
 		super();
-		
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		this.grid = grid;
-		
+
+		// initial grid values
+		int cols = 10;
+		int rows = 10;
+		double percF = 0.5;
+
+		// initialize object attributes
+		this.grid = CheeseCakeSolver.createGrid(percF, rows, cols);
 		xgrid = new XGrid(this.grid);
-		
+
+		this.nOfRows = new JTextField(String.valueOf(grid.length));
+		this.nOfCols = new JTextField(String.valueOf(grid[0].length));
+		this.percFilled = new JTextField(String.valueOf(0.5));
+		this.onlyClosest = new JCheckBox();
+
+		this.createGrid = new JButton(ACTION_CREATE);
+		this.createGrid.addActionListener(this);
+		this.cleanGrid = new JButton(ACTION_CLEAN);
+		this.cleanGrid.addActionListener(this);
+		this.startTraversal = new JButton(ACTION_TRAVERSAL);
+		this.startTraversal.addActionListener(this);
+
+		this.travResult = new JLabel("");
+
+		// window settings
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		this.setSize(749,180);
-		
-		//create the right column for the settings
+
+		this.setSize(450, 300);
+
+		// create the right column for the settings
 		Container settingsPane = new Container();
-		settingsPane.setLayout(new GridLayout(0,2));
-		
+		settingsPane.setLayout(new GridLayout(0, 2));
+
 		settingsPane.add(new JLabel("number of rows"));
-		settingsPane.add(new JTextField(String.valueOf(grid.length)));
+		settingsPane.add(nOfRows);
 		settingsPane.add(new JLabel("number of cols"));
-		settingsPane.add(new JTextField(String.valueOf(grid[0].length)));
+		settingsPane.add(nOfCols);
 		settingsPane.add(new JLabel("percentage filled"));
-		settingsPane.add(new JTextField(String.valueOf(0.6)));
-		settingsPane.add(new JButton("start traversal"));
-		
-		
-		
+		settingsPane.add(percFilled);
+		settingsPane.add(new JLabel("only closest"));
+		settingsPane.add(onlyClosest);
+
+		settingsPane.add(createGrid);
+		settingsPane.add(cleanGrid);
+		settingsPane.add(startTraversal);
+		settingsPane.add(travResult);
+
 		// set layout and place the various components inside the window
-		this.getContentPane().setLayout(new BorderLayout(5,5));
-		
+		this.getContentPane().setLayout(new BorderLayout(5, 5));
+
 		this.getContentPane().add(xgrid, BorderLayout.CENTER);
-		
+
 		this.getContentPane().add(settingsPane, BorderLayout.EAST);
-		
+
 		this.setVisible(true);
-		
+
 	}
-	
+
 	public Cell[][] getGrid() {
 		return grid;
 	}
@@ -88,5 +130,43 @@ public class MainWindow extends JFrame {
 		xgrid.setGrid(this.grid);
 	}
 
-	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+
+		if (arg0.getActionCommand().equals(ACTION_CREATE)) {
+			this.createGrid();
+			this.travResult.setText("");
+			this.repaint();
+		}
+
+		if (arg0.getActionCommand().equals(ACTION_CLEAN)) {
+			CheeseCakeSolver.cleanGrid(grid);
+			this.travResult.setText("");
+			this.repaint();
+		}
+
+		if (arg0.getActionCommand().equals(ACTION_TRAVERSAL)) {
+
+			CheeseCakeSolver.cleanGrid(grid);
+			boolean isTrav = CheeseCakeSolver.isTraversable(this.grid,
+					this.onlyClosest.isSelected());
+			
+			if(isTrav){
+				this.travResult.setText("Traversable");
+			} else {
+				this.travResult.setText("NOT traversable");
+			}
+			
+			this.repaint();
+		}
+
+	}
+
+	private void createGrid() {
+		double percentageFilled = Double.valueOf(this.percFilled.getText());
+		int dimX = Integer.valueOf(this.nOfRows.getText());
+		int dimY = Integer.valueOf(this.nOfCols.getText());
+		this.setGrid(CheeseCakeSolver.createGrid(percentageFilled, dimX, dimY));
+	}
+
 }
