@@ -1,6 +1,5 @@
 package gui;
 
-import grid.Cell;
 import grid.Grid2D;
 
 import java.awt.Color;
