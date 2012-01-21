@@ -15,6 +15,8 @@ public class Graph extends JComponent implements MouseMotionListener {
 	private int steps;
 	private int mouseX = 0;
 	private int mouseY = 0;
+	
+	private double correctionFactor = 0.99;
 
 	public Graph() {
 		super();
@@ -45,7 +47,7 @@ public class Graph extends JComponent implements MouseMotionListener {
 
 			x2 = i * this.getWidth() / steps;
 			y2 = (int) (this.getHeight() - this.getHeight()
-					* (0.99 * solutions[i])) - 1;
+					* (correctionFactor * solutions[i]));
 
 			g.drawLine(x1, y1, x2, y2);
 
@@ -53,6 +55,8 @@ public class Graph extends JComponent implements MouseMotionListener {
 			y1 = y2;
 
 		}
+		
+		g.drawLine(x1, y1, this.getWidth(), (int)(this.getHeight() - correctionFactor*this.getHeight()));
 
 		g.setColor(Color.RED);
 		int index = (int) (mouseX * steps / this.getWidth());
@@ -61,21 +65,23 @@ public class Graph extends JComponent implements MouseMotionListener {
 		;
 		g.drawOval(mouseX - 5, mouseY - 5, 10, 10);
 
-		String perc = String.format("filled: %.2f%%- traversable: %.1f%%",
+		String perc = String.format("filled: %.1f%%- traversable: %.1f%%",
 				100.0 *index / steps, 100 * solutions[index]);
 		
-		if(mouseX < 110){
-			mouseX = 110;
+		int halfString = 118;
+		
+		if(mouseX < halfString){
+			mouseX = halfString;
 		}
 		
-		if(mouseX > getWidth() - 110){
-			mouseX = getWidth() - 110;
+		if(mouseX > getWidth() - halfString){
+			mouseX = getWidth() - halfString;
 		}
 		
-		if (mouseY > getWidth() / 2) {
-			g.drawString(perc, mouseX - 110, mouseY - 10);
+		if (mouseY > getHeight() / 2) {
+			g.drawString(perc, mouseX - halfString, mouseY - 10);
 		} else {
-			g.drawString(perc, mouseX - 110, mouseY + 20);
+			g.drawString(perc, mouseX - halfString, mouseY + 20);
 		}
 
 	}
@@ -99,7 +105,7 @@ public class Graph extends JComponent implements MouseMotionListener {
 		mouseX = arg0.getPoint().x;
 
 		repaint();
-
+		
 	}
 
 }
