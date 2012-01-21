@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -31,23 +30,21 @@ public class MainWindow extends JFrame implements ActionListener,
 
 	private static final String ACTION_SIMULATION = "Start Simulation";
 
-	private XGrid xgrid;
-
 	// initial simulation values
 	private int cols = 10;
 	private int rows = 10;
 	private double percF = 0.5;
-	private int size = 1000;
+	private int steps = 100;
+	private int repPStep = 100;
 	private boolean onlyClosest;
 
-	private int traversableGrids = 0;
-
-	private ArrayList<Grid2D> gridList;
+	private int[] solutions;
 
 	private JTextField nOfRows;
 	private JTextField nOfCols;
 	private JTextField percFilled;
-	private JTextField simSize;
+	private JTextField nOfSteps;
+	private JTextField repPerStep;
 	private JCheckBox onlyClosestCB;
 
 	private JSlider selectGridSlide;
@@ -56,6 +53,10 @@ public class MainWindow extends JFrame implements ActionListener,
 	private JButton startTraversal;
 
 	private JLabel travResult;
+	
+	private Graph graph;
+	
+	private XGrid xgrid;
 
 	/**
 	 * Singleton pattern applied
@@ -81,10 +82,6 @@ public class MainWindow extends JFrame implements ActionListener,
 		}
 
 		// Initialise object attributes
-		xgrid = new XGrid();
-
-		this.gridList = new ArrayList<Grid2D>();
-
 		this.nOfRows = new JTextField(String.valueOf(rows));
 		this.nOfRows.addKeyListener(this);
 
@@ -94,13 +91,16 @@ public class MainWindow extends JFrame implements ActionListener,
 		this.percFilled = new JTextField(String.valueOf(percF));
 		this.percFilled.addKeyListener(this);
 
-		this.simSize = new JTextField(String.valueOf(size));
-		this.simSize.addKeyListener(this);
+		this.nOfSteps = new JTextField(String.valueOf(steps));
+		this.nOfSteps.addKeyListener(this);
+
+		this.repPerStep = new JTextField(String.valueOf(repPStep));
+		this.repPerStep.addKeyListener(this);
 
 		this.onlyClosestCB = new JCheckBox();
 		this.onlyClosestCB.addChangeListener(this);
 
-		this.selectGridSlide = new JSlider(JSlider.HORIZONTAL, 1, size, 1);
+		this.selectGridSlide = new JSlider(JSlider.HORIZONTAL, 1, repPStep, 1);
 		this.selectGridSlide.addChangeListener(this);
 		this.selectGridField = new JTextField("1");
 		this.selectGridField.addKeyListener(this);
@@ -111,6 +111,9 @@ public class MainWindow extends JFrame implements ActionListener,
 		this.startTraversal.addActionListener(this);
 
 		this.travResult = new JLabel("");
+		
+		graph = new Graph();
+		xgrid = new XGrid();
 
 		// window settings
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,8 +130,10 @@ public class MainWindow extends JFrame implements ActionListener,
 		settingsPane.add(nOfRows);
 		settingsPane.add(new JLabel("percentage filled (double 0.0 - 1.0)"));
 		settingsPane.add(percFilled);
-		settingsPane.add(new JLabel("simulation size (int > 0)"));
-		settingsPane.add(simSize);
+		settingsPane.add(new JLabel("number of steps (int > 0)"));
+		settingsPane.add(nOfSteps);
+		settingsPane.add(new JLabel("repetitions per step (int > 0)"));
+		settingsPane.add(repPerStep);
 		settingsPane.add(new JLabel("only closest"));
 		settingsPane.add(onlyClosestCB);
 
@@ -146,7 +151,8 @@ public class MainWindow extends JFrame implements ActionListener,
 
 		this.getContentPane().add(settingsPane, BorderLayout.WEST);
 
-		this.getContentPane().add(xgrid, BorderLayout.CENTER);
+		this.getContentPane().add(graph, BorderLayout.CENTER);
+		this.getContentPane().add(xgrid, BorderLayout.EAST);
 
 		this.setVisible(true);
 
@@ -160,7 +166,7 @@ public class MainWindow extends JFrame implements ActionListener,
 	public void actionPerformed(ActionEvent arg0) {
 
 		if (arg0.getActionCommand().equals(ACTION_SIMULATION)) {
-			if(areParametersCorrect()){
+			if (areParametersCorrect()) {
 				startSimulation();
 			} else {
 				this.travResult.setText("Please correct the wrong parameters");
@@ -172,29 +178,36 @@ public class MainWindow extends JFrame implements ActionListener,
 	private void startSimulation() {
 
 		disableSelection();
-		
+
 		this.travResult.setText("Calculating...");
+		this.repaint();
 		
-		traversableGrids = 0;
+		percF = 0.0;
+		
+		this.solutions = new int[steps];
 
-		this.gridList.clear();
-
-		for (int i = 0; i < size; i++) {
-			Grid2D g = new Grid2D(percF, rows, cols);
-			if (g.isTraversable(onlyClosest)) {
-				++traversableGrids;
+		for (int i = 0; i < steps; i++) {
+			int traversableGrids = 0;
+			percF += 1.0 / steps;
+			for (int j = 0; j < repPStep; j++) {
+				Grid2D g = new Grid2D(percF, rows, cols);
+				if (g.isTraversable(onlyClosest)) {
+					++traversableGrids;
+				}
 			}
-			this.gridList.add(g);
+			solutions[i] = traversableGrids;
 		}
+		
+		graph.setSolutions(solutions, steps, repPStep);
+		
+		graph.repaint();
 
-		this.travResult.setText(100.0 * traversableGrids / size
-				+ "% of traversable grids");
-
-		this.selectGridSlide.setMaximum(size);
+		this.selectGridSlide.setMaximum(repPStep);
 		this.selectGridSlide.setValue(1);
-		this.xgrid.setGrid(gridList.get(0));
-		this.xgrid.repaint();
 
+		System.gc();
+		
+		this.travResult.setText("Done");
 		enableSelection();
 
 	}
@@ -203,7 +216,7 @@ public class MainWindow extends JFrame implements ActionListener,
 
 		if (containsInteger(selectGridField)) {
 			int selectedGrid = Integer.valueOf(selectGridField.getText());
-			if (selectedGrid > 0 && selectedGrid <= size) {
+			if (selectedGrid > 0 && selectedGrid <= repPStep) {
 				this.selectGridSlide.setValue(selectedGrid);
 				blackJFieldText(selectGridField);
 			} else {
@@ -281,14 +294,13 @@ public class MainWindow extends JFrame implements ActionListener,
 	@Override
 	public void stateChanged(ChangeEvent arg0) {
 
-		if(arg0.getSource().equals(this.onlyClosestCB)){
+		if (arg0.getSource().equals(this.onlyClosestCB)) {
 			this.onlyClosest = onlyClosestCB.isSelected();
 		}
 
-		if(arg0.getSource().equals(this.selectGridSlide)){
+		if (arg0.getSource().equals(this.selectGridSlide)) {
 			this.selectGridField.setText(String.valueOf(this.selectGridSlide
 					.getValue()));
-			this.xgrid.setGrid(gridList.get(this.selectGridSlide.getValue() - 1));
 			this.xgrid.repaint();
 		}
 
@@ -318,8 +330,12 @@ public class MainWindow extends JFrame implements ActionListener,
 			setPercF((JTextField) (arg0.getSource()));
 		}
 
-		if (this.simSize.equals(arg0.getSource())) {
-			setSize((JTextField) (arg0.getSource()));
+		if (this.repPerStep.equals(arg0.getSource())) {
+			setRepPStep((JTextField) (arg0.getSource()));
+		}
+
+		if (this.nOfSteps.equals(arg0.getSource())) {
+			setSteps((JTextField) (arg0.getSource()));
 		}
 
 	}
@@ -351,11 +367,22 @@ public class MainWindow extends JFrame implements ActionListener,
 		}
 	}
 
-	private void setSize(JTextField aField) {
+	private void setRepPStep(JTextField aField) {
 		if (containsInteger(aField)) {
 			int tmp = Integer.parseInt(aField.getText());
 			if (tmp > 0) {
-				size = tmp;
+				repPStep = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+	
+	private void setSteps(JTextField aField) {
+		if (containsInteger(aField)) {
+			int tmp = Integer.parseInt(aField.getText());
+			if (tmp > 0) {
+				steps = tmp;
 			} else {
 				redJFieldText(aField);
 			}
@@ -372,15 +399,16 @@ public class MainWindow extends JFrame implements ActionListener,
 			}
 		}
 	}
-	
-	private boolean areParametersCorrect(){
+
+	private boolean areParametersCorrect() {
 		boolean areCorrect = true;
-		
+
 		areCorrect &= nOfCols.getForeground().equals(Color.BLACK);
 		areCorrect &= nOfRows.getForeground().equals(Color.BLACK);
 		areCorrect &= percFilled.getForeground().equals(Color.BLACK);
-		areCorrect &= simSize.getForeground().equals(Color.BLACK);
-		
+		areCorrect &= nOfSteps.getForeground().equals(Color.BLACK);
+		areCorrect &= repPerStep.getForeground().equals(Color.BLACK);
+
 		return areCorrect;
 	}
 
