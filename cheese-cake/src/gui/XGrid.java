@@ -17,13 +17,18 @@ public class XGrid extends JComponent {
 	private int height = 20;
 	private int width = 20;
 
-	public XGrid(Grid2D grid) {
-
-		this.grid = grid;
-
+	public XGrid() {
+		super();
 	}
+	
 
 	public void paint(Graphics g) {
+		
+		if(this.grid == null){
+			g.setColor(Color.gray);
+			g.fillRect(0, 0, this.getSize().width, this.getSize().height);
+			return;
+		}
 
 		width = this.getSize().width / (grid.getRows());
 		height = this.getSize().height / (grid.getCols());

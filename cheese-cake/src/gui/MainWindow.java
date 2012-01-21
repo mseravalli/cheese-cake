@@ -29,13 +29,11 @@ public class MainWindow extends JFrame implements ActionListener,
 
 	private static MainWindow mainWindow = null;
 
-	private static final String ACTION_CREATE = "Create Grid";
-	private static final String ACTION_CLEAN = "Clean Grid";
 	private static final String ACTION_SIMULATION = "Start Simulation";
 
 	private XGrid xgrid;
 
-	// initial grid values
+	// initial simulation values
 	private int cols = 10;
 	private int rows = 10;
 	private double percF = 0.5;
@@ -43,8 +41,6 @@ public class MainWindow extends JFrame implements ActionListener,
 	private boolean onlyClosest;
 
 	private int traversableGrids = 0;
-
-	private Grid2D grid;
 
 	private ArrayList<Grid2D> gridList;
 
@@ -57,8 +53,6 @@ public class MainWindow extends JFrame implements ActionListener,
 	private JSlider selectGridSlide;
 	private JTextField selectGridField;
 
-	private JButton createGrid;
-	private JButton cleanGrid;
 	private JButton startTraversal;
 
 	private JLabel travResult;
@@ -87,26 +81,32 @@ public class MainWindow extends JFrame implements ActionListener,
 		}
 
 		// Initialise object attributes
-		this.grid = new Grid2D(percF, rows, cols);
-		xgrid = new XGrid(this.grid);
+		xgrid = new XGrid();
 
 		this.gridList = new ArrayList<Grid2D>();
 
 		this.nOfRows = new JTextField(String.valueOf(rows));
+		this.nOfRows.addKeyListener(this);
+
 		this.nOfCols = new JTextField(String.valueOf(cols));
+		this.nOfCols.addKeyListener(this);
+
 		this.percFilled = new JTextField(String.valueOf(percF));
+		this.percFilled.addKeyListener(this);
+
 		this.simSize = new JTextField(String.valueOf(size));
+		this.simSize.addKeyListener(this);
+
 		this.onlyClosestCB = new JCheckBox();
+		this.onlyClosestCB.addChangeListener(this);
 
 		this.selectGridSlide = new JSlider(JSlider.HORIZONTAL, 1, size, 1);
 		this.selectGridSlide.addChangeListener(this);
 		this.selectGridField = new JTextField("1");
 		this.selectGridField.addKeyListener(this);
+		this.selectGridSlide.setEnabled(false);
+		this.selectGridField.setEnabled(false);
 
-		this.createGrid = new JButton(ACTION_CREATE);
-		this.createGrid.addActionListener(this);
-		this.cleanGrid = new JButton(ACTION_CLEAN);
-		this.cleanGrid.addActionListener(this);
 		this.startTraversal = new JButton(ACTION_SIMULATION);
 		this.startTraversal.addActionListener(this);
 
@@ -121,13 +121,13 @@ public class MainWindow extends JFrame implements ActionListener,
 		Container settingsPane = new Container();
 		settingsPane.setLayout(new GridLayout(0, 2));
 
-		settingsPane.add(new JLabel("number of rows"));
+		settingsPane.add(new JLabel("number of rows (int > 0)"));
 		settingsPane.add(nOfCols);
-		settingsPane.add(new JLabel("number of cols"));
+		settingsPane.add(new JLabel("number of cols (int > 0)"));
 		settingsPane.add(nOfRows);
-		settingsPane.add(new JLabel("percentage filled"));
+		settingsPane.add(new JLabel("percentage filled (double 0.0 - 1.0)"));
 		settingsPane.add(percFilled);
-		settingsPane.add(new JLabel("simulation size"));
+		settingsPane.add(new JLabel("simulation size (int > 0)"));
 		settingsPane.add(simSize);
 		settingsPane.add(new JLabel("only closest"));
 		settingsPane.add(onlyClosestCB);
@@ -141,15 +141,12 @@ public class MainWindow extends JFrame implements ActionListener,
 		settingsPane.add(selectGridSlide);
 		settingsPane.add(selectGridField);
 
-		settingsPane.add(createGrid);
-		settingsPane.add(cleanGrid);
-
 		// set layout and place the various components inside the window
 		this.getContentPane().setLayout(new BorderLayout(5, 5));
 
-		this.getContentPane().add(xgrid, BorderLayout.CENTER);
+		this.getContentPane().add(settingsPane, BorderLayout.WEST);
 
-		this.getContentPane().add(settingsPane, BorderLayout.EAST);
+		this.getContentPane().add(xgrid, BorderLayout.CENTER);
 
 		this.setVisible(true);
 
@@ -159,77 +156,54 @@ public class MainWindow extends JFrame implements ActionListener,
 	// return grid;
 	// }
 
-	public void setGrid(Grid2D grid) {
-		this.grid = grid;
-		xgrid.setGrid(this.grid);
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 
-		if (arg0.getActionCommand().equals(ACTION_CREATE)) {
-			this.createGrid();
-			this.travResult.setText("");
-			this.repaint();
-		}
-
-		if (arg0.getActionCommand().equals(ACTION_CLEAN)) {
-			grid.cleanGrid();
-			this.travResult.setText("");
-			this.repaint();
-		}
-
 		if (arg0.getActionCommand().equals(ACTION_SIMULATION)) {
-
-			int size = 0;
-
-			traversableGrids = 0;
-
-			this.gridList.clear();
-
-			try {
-				size = Integer.valueOf(this.simSize.getText());
-			} catch (Exception e) {
-				System.err.println("the size of the simulation is not valid");
+			if(areParametersCorrect()){
+				startSimulation();
+			} else {
+				this.travResult.setText("Please correct the wrong parameters");
 			}
-
-			for (int i = 0; i < size; i++) {
-				Grid2D g = new Grid2D(percF, rows, cols);
-				if (g.isTraversable(onlyClosest)) {
-					++traversableGrids;
-				}
-				this.gridList.add(g);
-			}
-
-			this.travResult.setText(100.0 * traversableGrids / size
-					+ "% of traversable grids");
-
-			// old stuff need to delete it
-			/*
-			 * grid.cleanGrid(); boolean isTrav =
-			 * grid.isTraversable(onlyClosestCB.isSelected());
-			 * 
-			 * if(isTrav){ this.travResult.setText("Traversable"); } else {
-			 * this.travResult.setText("NOT traversable"); }
-			 * 
-			 * this.repaint();
-			 */
 		}
 
 	}
 
-	private void createGrid() {
-		double percentageFilled = Double.valueOf(this.percFilled.getText());
-		int dimX = Integer.valueOf(this.nOfRows.getText());
-		int dimY = Integer.valueOf(this.nOfCols.getText());
-		this.setGrid(new Grid2D(percentageFilled, dimX, dimY));
+	private void startSimulation() {
+
+		disableSelection();
+		
+		this.travResult.setText("Calculating...");
+		
+		traversableGrids = 0;
+
+		this.gridList.clear();
+
+		for (int i = 0; i < size; i++) {
+			Grid2D g = new Grid2D(percF, rows, cols);
+			if (g.isTraversable(onlyClosest)) {
+				++traversableGrids;
+			}
+			this.gridList.add(g);
+		}
+
+		this.travResult.setText(100.0 * traversableGrids / size
+				+ "% of traversable grids");
+
+		this.selectGridSlide.setMaximum(size);
+		this.selectGridSlide.setValue(1);
+		this.xgrid.setGrid(gridList.get(0));
+		this.xgrid.repaint();
+
+		enableSelection();
+
 	}
 
 	private void syncSelFieldSlide() {
 
-		if(containsInteger(selectGridField) ){
+		if (containsInteger(selectGridField)) {
 			int selectedGrid = Integer.valueOf(selectGridField.getText());
-			if(selectedGrid > 0 && selectedGrid <= size){
+			if (selectedGrid > 0 && selectedGrid <= size) {
 				this.selectGridSlide.setValue(selectedGrid);
 				blackJFieldText(selectGridField);
 			} else {
@@ -240,11 +214,21 @@ public class MainWindow extends JFrame implements ActionListener,
 	}
 
 	private void redJFieldText(JTextField aField) {
-		aField.setForeground(new Color(255, 0, 0));
+		aField.setForeground(Color.RED);
 	}
 
 	private void blackJFieldText(JTextField aField) {
-		aField.setForeground(new Color(0, 0, 0));
+		aField.setForeground(Color.BLACK);
+	}
+
+	private void enableSelection() {
+		selectGridField.setEnabled(true);
+		selectGridSlide.setEnabled(true);
+	}
+
+	private void disableSelection() {
+		selectGridField.setEnabled(false);
+		selectGridSlide.setEnabled(false);
 	}
 
 	/**
@@ -259,25 +243,54 @@ public class MainWindow extends JFrame implements ActionListener,
 		boolean isInt = false;
 
 		try {
-			Integer.parseInt(this.selectGridField.getText());
-			blackJFieldText(selectGridField);
+			Integer.parseInt(aField.getText());
+			blackJFieldText(aField);
 			isInt = true;
 
 		} catch (Exception e) {
-			redJFieldText(selectGridField);
-		} 
-		
+			redJFieldText(aField);
+		}
+
 		return isInt;
+	}
+
+	private boolean containsDouble(JTextField aField) {
+
+		boolean isDouble = false;
+
+		try {
+			Double.parseDouble(aField.getText());
+			blackJFieldText(aField);
+			isDouble = true;
+
+		} catch (Exception e) {
+			redJFieldText(aField);
+		}
+
+		return isDouble;
+	}
+
+	private boolean isInRange(double x, double min, double max) {
+		if (x >= min && x <= max) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public void stateChanged(ChangeEvent arg0) {
 
-		// TODO be sure that the component generating the change is the
-		// selectGridSlide
+		if(arg0.getSource().equals(this.onlyClosestCB)){
+			this.onlyClosest = onlyClosestCB.isSelected();
+		}
 
-		this.selectGridField.setText(String.valueOf(this.selectGridSlide
-				.getValue()));
+		if(arg0.getSource().equals(this.selectGridSlide)){
+			this.selectGridField.setText(String.valueOf(this.selectGridSlide
+					.getValue()));
+			this.xgrid.setGrid(gridList.get(this.selectGridSlide.getValue() - 1));
+			this.xgrid.repaint();
+		}
 
 	}
 
@@ -293,11 +306,82 @@ public class MainWindow extends JFrame implements ActionListener,
 			this.syncSelFieldSlide();
 		}
 
+		if (this.nOfCols.equals(arg0.getSource())) {
+			setCols((JTextField) (arg0.getSource()));
+		}
+
+		if (this.nOfRows.equals(arg0.getSource())) {
+			setRows((JTextField) (arg0.getSource()));
+		}
+
+		if (this.percFilled.equals(arg0.getSource())) {
+			setPercF((JTextField) (arg0.getSource()));
+		}
+
+		if (this.simSize.equals(arg0.getSource())) {
+			setSize((JTextField) (arg0.getSource()));
+		}
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 
+	}
+
+	private void setCols(JTextField aField) {
+		if (containsInteger(aField)) {
+			int tmp = Integer.parseInt(aField.getText());
+			if (tmp > 0) {
+				cols = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+
+	private void setRows(JTextField aField) {
+		if (containsInteger(aField)) {
+			int tmp = Integer.parseInt(aField.getText());
+			if (tmp > 0) {
+				rows = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+
+	private void setSize(JTextField aField) {
+		if (containsInteger(aField)) {
+			int tmp = Integer.parseInt(aField.getText());
+			if (tmp > 0) {
+				size = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+
+	private void setPercF(JTextField aField) {
+		if (containsDouble(aField)) {
+			double tmp = Double.parseDouble(aField.getText());
+			if (isInRange(tmp, 0, 1)) {
+				percF = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+	
+	private boolean areParametersCorrect(){
+		boolean areCorrect = true;
+		
+		areCorrect &= nOfCols.getForeground().equals(Color.BLACK);
+		areCorrect &= nOfRows.getForeground().equals(Color.BLACK);
+		areCorrect &= percFilled.getForeground().equals(Color.BLACK);
+		areCorrect &= simSize.getForeground().equals(Color.BLACK);
+		
+		return areCorrect;
 	}
 
 }
