@@ -18,10 +18,11 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListener, ActionListener {
-	
+public class Simulator3D extends OptAndDisp implements KeyListener,
+		ChangeListener, ActionListener {
+
 	private static final long serialVersionUID = -2041823208493812545L;
-	
+
 	private static final String ACTION_SIMULATION = "Start Simulation";
 
 	// initial simulation values
@@ -33,7 +34,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 	private boolean onlyClosest;
 
 	private int[] solutions;
-	
+
 	private JTextField nOfRows;
 	private JTextField nOfCols;
 	private JTextField nOfPages;
@@ -44,13 +45,17 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 	private JButton startTraversal;
 
 	private JLabel travResult;
-	
+
 	private Graph graph;
-	
-	public Simulator3D(){
-		
+
+	/**
+	 * Constructs the Simulator3D by initialising all the attributes and by placing
+	 * all the components
+	 */
+	public Simulator3D() {
+
 		super();
-		
+
 		// Initialise object attributes
 		this.nOfRows = new JTextField(String.valueOf(rows));
 		this.nOfRows.addKeyListener(this);
@@ -59,7 +64,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		this.nOfCols = new JTextField(String.valueOf(cols));
 		this.nOfCols.addKeyListener(this);
 		blackJFieldText(nOfCols);
-		
+
 		this.nOfPages = new JTextField(String.valueOf(pages));
 		this.nOfPages.addKeyListener(this);
 		blackJFieldText(nOfPages);
@@ -79,9 +84,9 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		this.startTraversal.addActionListener(this);
 
 		this.travResult = new JLabel("");
-		
+
 		graph = new Graph();
-		
+
 		// create the right column for the settings
 		Container settingsPane = new Container();
 		settingsPane.setLayout(new GridLayout(0, 2));
@@ -96,7 +101,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		settingsPane.add(nOfSteps);
 		settingsPane.add(new JLabel("repetitions per step (int > 0)"));
 		settingsPane.add(repPerStep);
-		settingsPane.add(new JLabel("only closest"));
+		settingsPane.add(new JLabel("only closest neighbours"));
 		settingsPane.add(onlyClosestCB);
 
 		settingsPane.add(startTraversal);
@@ -104,13 +109,13 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 
 		// set layout and place the various components inside the window
 		mainContainer.setLayout(new GridLayout(0, 2));
-		
+
 		mainContainer.add(settingsPane);
 		mainContainer.add(graph);
-		
+
 		this.add(mainContainer);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 
@@ -123,14 +128,14 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		}
 
 	}
-	
+
 	private void startSimulation() {
 
 		this.travResult.setText("Calculating...");
 		this.repaint();
-		
+
 		double percF = 0.0;
-		
+
 		this.solutions = new int[steps];
 
 		for (int i = 0; i < steps; i++) {
@@ -144,17 +149,16 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 			percF += 1.0 / steps;
 			solutions[i] = traversableGrids;
 		}
-		
+
 		graph.setSolutions(solutions, steps, repPStep);
-		
+
 		graph.repaint();
 
 		System.gc();
-		
+
 		this.travResult.setText("Done");
 
 	}
-
 
 	@Override
 	public void stateChanged(ChangeEvent arg0) {
@@ -180,7 +184,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		if (this.nOfRows.equals(arg0.getSource())) {
 			setRows((JTextField) (arg0.getSource()));
 		}
-		
+
 		if (this.nOfPages.equals(arg0.getSource())) {
 			setPages((JTextField) (arg0.getSource()));
 		}
@@ -221,7 +225,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 			}
 		}
 	}
-	
+
 	private void setPages(JTextField aField) {
 		if (containsInteger(aField)) {
 			int tmp = Integer.parseInt(aField.getText());
@@ -243,7 +247,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 			}
 		}
 	}
-	
+
 	private void setSteps(JTextField aField) {
 		if (containsInteger(aField)) {
 			int tmp = Integer.parseInt(aField.getText());
@@ -255,6 +259,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		}
 	}
 
+	@Override
 	protected boolean areParametersCorrect() {
 		boolean areCorrect = true;
 
@@ -265,5 +270,5 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 
 		return areCorrect;
 	}
-	
+
 }

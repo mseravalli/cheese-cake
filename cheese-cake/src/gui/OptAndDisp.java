@@ -10,30 +10,52 @@ import javax.swing.JTextField;
 public abstract class OptAndDisp extends JComponent {
 
 	private static final long serialVersionUID = -3204782823482728561L;
-	
-	public OptAndDisp(){
+
+	protected Container mainContainer;
+
+	/**
+	 * Initialises the container, that will be used to store all other
+	 * components
+	 */
+	public OptAndDisp() {
 		super();
 		mainContainer = new Container();
 	}
-	
-	protected Container mainContainer;
-	
+
+	/**
+	 * Checks whether all paramenters are correct
+	 * 
+	 * @return
+	 */
 	protected abstract boolean areParametersCorrect();
 
+	/**
+	 * Sets the Foreground of the passed text field as BLACK
+	 * 
+	 * @param aField
+	 */
 	protected void blackJFieldText(JTextField aField) {
 		aField.setForeground(Color.BLACK);
 	}
-	
+
+	/**
+	 * Sets the Foreground of the passed text field as RED
+	 * 
+	 * @param aField
+	 */
 	protected void redJFieldText(JTextField aField) {
 		aField.setForeground(Color.RED);
 	}
-	
-	public void paint(Graphics g){
+
+	/**
+	 * Gives the size of the component to the container
+	 */
+	public void paint(Graphics g) {
 		super.paint(g);
-		
+
 		this.mainContainer.setSize(this.getWidth(), this.getHeight());
 	}
-	
+
 	/**
 	 * The method changes the colour of the font of the JText field if the value
 	 * in the text is not an integer
@@ -57,6 +79,13 @@ public abstract class OptAndDisp extends JComponent {
 		return isInt;
 	}
 
+	/**
+	 * The method changes the colour of the font of the JText field if the value
+	 * in the text is not a double
+	 * 
+	 * @param aField
+	 * @return
+	 */
 	protected boolean containsDouble(JTextField aField) {
 
 		boolean isDouble = false;
@@ -73,6 +102,14 @@ public abstract class OptAndDisp extends JComponent {
 		return isDouble;
 	}
 
+	/**
+	 * Checks if the given falls in the given range
+	 * 
+	 * @param x
+	 * @param min
+	 * @param max
+	 * @return
+	 */
 	protected boolean isInRange(double x, double min, double max) {
 		if (x >= min && x <= max) {
 			return true;
@@ -80,5 +117,5 @@ public abstract class OptAndDisp extends JComponent {
 			return false;
 		}
 	}
-	
+
 }

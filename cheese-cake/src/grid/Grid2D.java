@@ -6,15 +6,23 @@ public class Grid2D extends Grid {
 
 	private Cell[][] g;
 
+	/**
+	 * Constructs a 2D grid of Cell with the given dimensions
+	 * 
+	 * @param percFilled
+	 *            percentage of non empty (crossable) Cell
+	 * @param rows
+	 * @param cols
+	 */
 	public Grid2D(double percFilled, int rows, int cols) {
-		super(percFilled);
+		super();
 		g = new Cell[rows][cols];
 
 		Random randomGenerator = new Random();
 
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				if (randomGenerator.nextDouble() < super.percFilled) {
+				if (randomGenerator.nextDouble() < percFilled) {
 					g[i][j] = new Cell(true);
 				} else {
 					g[i][j] = new Cell(false);
@@ -23,26 +31,53 @@ public class Grid2D extends Grid {
 		}
 
 	}
-	
-	//needed for testing purposes
-	public Grid2D(Cell[][] g){
+
+	/**
+	 * Constructs a 2D grid from the given Cell array
+	 * 
+	 * @param g
+	 */
+	public Grid2D(Cell[][] g) {
 		this.g = g;
 	}
-	
-	
-	public int getRows(){
+
+	/**
+	 * Returns the number of rows
+	 * 
+	 * @return
+	 */
+	public int getRows() {
 		return g.length;
 	}
-	
-	public int getCols(){
+
+	/**
+	 * Return the number of columns
+	 * 
+	 * @return
+	 */
+	public int getCols() {
 		return g[0].length;
 	}
-	
-	public boolean isSolution(int x, int y){
+
+	/**
+	 * Returns if the Cell at the given position is part of the solution
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isSolution(int x, int y) {
 		return g[x][y].isSolution();
 	}
-	
-	public boolean isCrossable(int x, int y){
+
+	/**
+	 * Returns if the Cell at the given position can be crossed
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isCrossable(int x, int y) {
 		return g[x][y].isCrossable();
 	}
 
@@ -57,6 +92,15 @@ public class Grid2D extends Grid {
 		return isTrav;
 	}
 
+	/**
+	 * This method starts looking at the solution starting from the given
+	 * coordinates
+	 * 
+	 * @param x
+	 * @param y
+	 * @param onlyClosest
+	 * @return
+	 */
 	protected boolean isTraversable(int x, int y, boolean onlyClosest) {
 		if (x < 0 || x >= g.length || y < 0 || y >= g[0].length) {
 			return false;

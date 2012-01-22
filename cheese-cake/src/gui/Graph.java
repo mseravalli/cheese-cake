@@ -15,9 +15,12 @@ public class Graph extends JComponent implements MouseMotionListener {
 	private int steps;
 	private int mouseX = 0;
 	private int mouseY = 0;
-	
+
 	private double correctionFactor = 0.99;
 
+	/**
+	 * Constructs a graph
+	 */
 	public Graph() {
 		super();
 		solutions = null;
@@ -27,6 +30,12 @@ public class Graph extends JComponent implements MouseMotionListener {
 		mouseY = -1;
 	}
 
+	/**
+	 * Paints a white rectangle if no solutions are provided. If a solution is
+	 * provided, then it is displayed as a 2 dimensional graph. If the mouse is
+	 * on Graph, the X coordinate is stored and a red circle containing some
+	 * information about the solution is displayed on the curve
+	 */
 	public void paint(Graphics g) {
 
 		g.setColor(Color.WHITE);
@@ -35,6 +44,8 @@ public class Graph extends JComponent implements MouseMotionListener {
 		if (solutions == null) {
 			return;
 		}
+
+		// draw the graph
 
 		g.setColor(Color.BLACK);
 
@@ -55,8 +66,11 @@ public class Graph extends JComponent implements MouseMotionListener {
 			y1 = y2;
 
 		}
-		
-		g.drawLine(x1, y1, this.getWidth(), (int)(this.getHeight() - correctionFactor*this.getHeight()));
+
+		g.drawLine(x1, y1, this.getWidth(),
+				(int) (this.getHeight() - correctionFactor * this.getHeight()));
+
+		// draw the red circle for the mouse
 
 		g.setColor(Color.RED);
 		int index = (int) (mouseX * steps / this.getWidth());
@@ -66,18 +80,18 @@ public class Graph extends JComponent implements MouseMotionListener {
 		g.drawOval(mouseX - 5, mouseY - 5, 10, 10);
 
 		String perc = String.format("filled: %.1f%%- traversable: %.1f%%",
-				100.0 *index / steps, 100 * solutions[index]);
-		
+				100.0 * index / steps, 100 * solutions[index]);
+
 		int halfString = 118;
-		
-		if(mouseX < halfString){
+
+		if (mouseX < halfString) {
 			mouseX = halfString;
 		}
-		
-		if(mouseX > getWidth() - halfString){
+
+		if (mouseX > getWidth() - halfString) {
 			mouseX = getWidth() - halfString;
 		}
-		
+
 		if (mouseY > getHeight() / 2) {
 			g.drawString(perc, mouseX - halfString, mouseY - 10);
 		} else {
@@ -86,6 +100,13 @@ public class Graph extends JComponent implements MouseMotionListener {
 
 	}
 
+	/**
+	 * The solution is set
+	 * 
+	 * @param sol
+	 * @param steps
+	 * @param repPStep
+	 */
 	public void setSolutions(int[] sol, int steps, int repPStep) {
 		this.steps = steps;
 		this.solutions = new double[steps];
@@ -105,7 +126,7 @@ public class Graph extends JComponent implements MouseMotionListener {
 		mouseX = arg0.getPoint().x;
 
 		repaint();
-		
+
 	}
 
 }

@@ -18,11 +18,12 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener, ActionListener {
-	
+public class Solver2D extends OptAndDisp implements KeyListener,
+		ChangeListener, ActionListener {
+
 	private static final long serialVersionUID = -2041823208493812545L;
-	
-	private static final String ACTION_SIMULATION = "Start Simulation";
+
+	private static final String ACTION_SOLVE = "Solve the grids";
 
 	// initial simulation values
 	private int cols = 12;
@@ -32,7 +33,7 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 	private boolean onlyClosest;
 
 	private Grid2D[] gridList;
-	
+
 	private JTextField nOfRows;
 	private JTextField nOfCols;
 	private JTextField percFilled;
@@ -45,13 +46,17 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 	private JButton startTraversal;
 
 	private JLabel travResult;
-	
+
 	private XGrid xgrid;
-	
-	public Solver2D(){
-		
+
+	/**
+	 * Constructs the Solver2D by initialising all the attributes and by placing
+	 * all the components
+	 */
+	public Solver2D() {
+
 		super();
-		
+
 		// Initialise object attributes
 		this.nOfRows = new JTextField(String.valueOf(rows));
 		this.nOfRows.addKeyListener(this);
@@ -79,13 +84,13 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 		this.selectGridSlide.setEnabled(false);
 		this.selectGridField.setEnabled(false);
 
-		this.startTraversal = new JButton(ACTION_SIMULATION);
+		this.startTraversal = new JButton(ACTION_SOLVE);
 		this.startTraversal.addActionListener(this);
 
 		this.travResult = new JLabel("");
-		
+
 		xgrid = new XGrid();
-		
+
 		// create the right column for the settings
 		Container settingsPane = new Container();
 		settingsPane.setLayout(new GridLayout(0, 2));
@@ -98,7 +103,7 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 		settingsPane.add(percFilled);
 		settingsPane.add(new JLabel("repetitions per step (int > 0)"));
 		settingsPane.add(repPerStep);
-		settingsPane.add(new JLabel("only closest"));
+		settingsPane.add(new JLabel("only closest neighbours"));
 		settingsPane.add(onlyClosestCB);
 
 		settingsPane.add(startTraversal);
@@ -113,55 +118,59 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 		// set layout and place the various components inside the window
 		mainContainer = new Container();
 		mainContainer.setLayout(new GridLayout(0, 2));
-		
+
 		mainContainer.add(settingsPane);
 		mainContainer.add(xgrid);
-		
+
 		this.add(mainContainer);
 
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 
-		if (arg0.getActionCommand().equals(ACTION_SIMULATION)) {
+		if (arg0.getActionCommand().equals(ACTION_SOLVE)) {
 			if (areParametersCorrect()) {
-				startSimulation();
+				solve();
 			} else {
 				this.travResult.setText("Please correct the wrong parameters");
 			}
 		}
 
 	}
-	
-	private void startSimulation() {
-		
+
+	/**
+	 * Solves all the set of the grids
+	 */
+	private void solve() {
+
 		disableSelection();
-        
-        this.travResult.setText("Calculating...");
-        
-        int traversableGrids = 0;
 
-        this.gridList = new Grid2D[repPStep];
+		this.travResult.setText("Calculating...");
 
-        for (int i = 0; i < repPStep; i++) {
-                Grid2D g = new Grid2D(percF, rows, cols);
-                if (g.isTraversable(onlyClosest)) {
-                        ++traversableGrids;
-                }
-                this.gridList[i] = g;
-        }
+		int traversableGrids = 0;
 
-        String res = String.format("%.2f%% of traversable grids", 100.0 * traversableGrids / repPStep);
-        
-        this.travResult.setText(res);
+		this.gridList = new Grid2D[repPStep];
 
-        this.selectGridSlide.setMaximum(repPStep);
-        this.selectGridSlide.setValue(1);
-        this.xgrid.setGrid(gridList[0]);
-        this.xgrid.repaint();
+		for (int i = 0; i < repPStep; i++) {
+			Grid2D g = new Grid2D(percF, rows, cols);
+			if (g.isTraversable(onlyClosest)) {
+				++traversableGrids;
+			}
+			this.gridList[i] = g;
+		}
 
-        enableSelection();
+		String res = String.format("%.2f%% of traversable grids", 100.0
+				* traversableGrids / repPStep);
+
+		this.travResult.setText(res);
+
+		this.selectGridSlide.setMaximum(repPStep);
+		this.selectGridSlide.setValue(1);
+		this.xgrid.setGrid(gridList[0]);
+		this.xgrid.repaint();
+
+		enableSelection();
 
 	}
 
@@ -178,17 +187,16 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 		}
 
 	}
-	
-	private void syncSelSlideField(){
-		
+
+	private void syncSelSlideField() {
+
 		this.selectGridField.setText(String.valueOf(this.selectGridSlide
 				.getValue()));
 		blackJFieldText(selectGridField);
 		this.xgrid.setGrid(gridList[this.selectGridSlide.getValue() - 1]);
 		this.xgrid.repaint();
-		
-	}
 
+	}
 
 	private void enableSelection() {
 		selectGridField.setEnabled(true);
@@ -280,7 +288,7 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 			}
 		}
 	}
-	
+
 	private void setPercF(JTextField aField) {
 		if (containsDouble(aField)) {
 			double tmp = Double.parseDouble(aField.getText());
@@ -292,6 +300,7 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 		}
 	}
 
+	@Override
 	protected boolean areParametersCorrect() {
 		boolean areCorrect = true;
 
@@ -302,5 +311,5 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
 
 		return areCorrect;
 	}
-	
+
 }
