@@ -1,6 +1,7 @@
 package gui;
 
-import grid.Grid2D;
+import grid.Grid;
+import grid.Grid3D;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -24,8 +25,9 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 	private static final String ACTION_SIMULATION = "Start Simulation";
 
 	// initial simulation values
-	private int cols = 12;
-	private int rows = 12;
+	private int cols = 4;
+	private int rows = 4;
+	private int pages = 4;
 	private int steps = 100;
 	private int repPStep = 100;
 	private boolean onlyClosest;
@@ -34,6 +36,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 	
 	private JTextField nOfRows;
 	private JTextField nOfCols;
+	private JTextField nOfPages;
 	private JTextField nOfSteps;
 	private JTextField repPerStep;
 	private JCheckBox onlyClosestCB;
@@ -56,6 +59,10 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		this.nOfCols = new JTextField(String.valueOf(cols));
 		this.nOfCols.addKeyListener(this);
 		blackJFieldText(nOfCols);
+		
+		this.nOfPages = new JTextField(String.valueOf(pages));
+		this.nOfPages.addKeyListener(this);
+		blackJFieldText(nOfPages);
 
 		this.nOfSteps = new JTextField(String.valueOf(steps));
 		this.nOfSteps.addKeyListener(this);
@@ -83,6 +90,8 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		settingsPane.add(nOfCols);
 		settingsPane.add(new JLabel("number of cols (int > 0)"));
 		settingsPane.add(nOfRows);
+		settingsPane.add(new JLabel("number of pages (int > 0)"));
+		settingsPane.add(nOfPages);
 		settingsPane.add(new JLabel("number of steps (int > 0)"));
 		settingsPane.add(nOfSteps);
 		settingsPane.add(new JLabel("repetitions per step (int > 0)"));
@@ -127,7 +136,7 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		for (int i = 0; i < steps; i++) {
 			int traversableGrids = 0;
 			for (int j = 0; j < repPStep; j++) {
-				Grid2D g = new Grid2D(percF, rows, cols);
+				Grid g = new Grid3D(percF, rows, cols, pages);
 				if (g.isTraversable(onlyClosest)) {
 					++traversableGrids;
 				}
@@ -171,6 +180,10 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 		if (this.nOfRows.equals(arg0.getSource())) {
 			setRows((JTextField) (arg0.getSource()));
 		}
+		
+		if (this.nOfPages.equals(arg0.getSource())) {
+			setPages((JTextField) (arg0.getSource()));
+		}
 
 		if (this.repPerStep.equals(arg0.getSource())) {
 			setRepPStep((JTextField) (arg0.getSource()));
@@ -203,6 +216,17 @@ public class Simulator3D extends OptAndDisp implements KeyListener, ChangeListen
 			int tmp = Integer.parseInt(aField.getText());
 			if (tmp > 0) {
 				rows = tmp;
+			} else {
+				redJFieldText(aField);
+			}
+		}
+	}
+	
+	private void setPages(JTextField aField) {
+		if (containsInteger(aField)) {
+			int tmp = Integer.parseInt(aField.getText());
+			if (tmp > 0) {
+				pages = tmp;
 			} else {
 				redJFieldText(aField);
 			}

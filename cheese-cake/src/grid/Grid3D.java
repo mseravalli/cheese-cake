@@ -36,9 +36,9 @@ public class Grid3D extends Grid {
 		boolean isTrav = false;
 
         for (int i = 0; i < g.length; i++) {
-                for (int j = 0; j < g[0].length; j++) {
-                        isTrav = isTrav || isTraversable(onlyClosest, 0, j, i);
-                }
+        	for (int j = 0; j < g[0].length; j++) {
+        		isTrav = isTrav || isTraversable(onlyClosest, i, j, 0);
+        	}
         }
 
         return isTrav;
@@ -77,45 +77,45 @@ public class Grid3D extends Grid {
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y + 1, z);
 		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x + 1, y + 1, z);
-		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x + 1, y - 1, z);
+		        isTrav = isTrav
+		                        || isTraversable(onlyClosest, x + 1, y + 1, z);
 		
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y - 1, z - 1);
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y + 1, z - 1);
 		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x + 1, y + 1, z - 1);
-		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x + 1, y - 1, z - 1);
+		        isTrav = isTrav
+		                        || isTraversable(onlyClosest, x + 1, y + 1, z - 1);
 		
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y - 1, z + 1);
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y + 1, z + 1);
 		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x + 1, y + 1, z + 1);
-		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x + 1, y - 1, z + 1);
+		        isTrav = isTrav
+		                        || isTraversable(onlyClosest, x + 1, y + 1, z + 1);
 		
+		        isTrav = isTrav
+		                        || isTraversable(onlyClosest, x, y - 1, z - 1);
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x, y - 1, z + 1);
 		        isTrav = isTrav
+		                        || isTraversable(onlyClosest, x, y + 1, z - 1);
+		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x, y + 1, z + 1);
-		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x, y - 1, z - 1);
-		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x, y - 1, z - 1);
 		
 		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x + 1, y, z + 1);
+		                        || isTraversable(onlyClosest, x - 1, y, z - 1);
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x - 1, y, z + 1);
 		        isTrav = isTrav
 		                        || isTraversable(onlyClosest, x + 1, y, z - 1);
 		        isTrav = isTrav
-		                        || isTraversable(onlyClosest, x - 1, y, z - 1);
+		                        || isTraversable(onlyClosest, x + 1, y, z + 1);
 		}
 		
 		g[x][y][z].setStatus(Cell.BLACK);
