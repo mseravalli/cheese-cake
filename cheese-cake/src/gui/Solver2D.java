@@ -4,7 +4,6 @@ import grid.Grid2D;
 
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -153,8 +152,9 @@ public class Solver2D extends OptAndDisp implements KeyListener, ChangeListener,
                 this.gridList[i] = g;
         }
 
-        this.travResult.setText(100.0 * traversableGrids / repPStep
-                        + "% of traversable grids");
+        String res = String.format("%.2f%% of traversable grids", 100.0 * traversableGrids / repPStep);
+        
+        this.travResult.setText(res);
 
         this.selectGridSlide.setMaximum(repPStep);
         this.selectGridSlide.setValue(1);

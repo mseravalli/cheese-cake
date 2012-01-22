@@ -1,12 +1,7 @@
 package gui;
 
-import java.awt.Container;
-import java.awt.Graphics;
-
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
 
 public class MainWindow extends JFrame{
 
