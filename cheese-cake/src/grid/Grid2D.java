@@ -57,7 +57,7 @@ public class Grid2D extends Grid {
 		return isTrav;
 	}
 
-	private boolean isTraversable(int x, int y, boolean onlyClosest) {
+	protected boolean isTraversable(int x, int y, boolean onlyClosest) {
 		if (x < 0 || x >= g.length || y < 0 || y >= g[0].length) {
 			return false;
 		}
